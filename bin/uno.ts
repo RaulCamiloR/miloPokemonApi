@@ -1,20 +1,36 @@
 #!/usr/bin/env node
 import * as cdk from 'aws-cdk-lib';
-import { UnoStack } from '../lib/uno-stack';
+import { UnoApiStack } from '../lib/unoApiStack';
+import { UnoLambdaStack } from '../lib/unoLambdaStack';
+import { UnoDatabaseStack } from '../lib/unoDatabase.Stack';
+import { UnoAuthStack } from '../lib/unoAuthStack';
 
 const app = new cdk.App();
-new UnoStack(app, 'UnoStack', {
-  /* If you don't specify 'env', this stack will be environment-agnostic.
-   * Account/Region-dependent features and context lookups will not work,
-   * but a single synthesized template can be deployed anywhere. */
 
-  /* Uncomment the next line to specialize this stack for the AWS Account
-   * and Region that are implied by the current CLI configuration. */
-  // env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+const auth = new UnoAuthStack(app, "unoAuthStack", {
+    stackName: "UnoAuthStack"
+})
 
-  /* Uncomment the next line if you know exactly what Account and Region you
-   * want to deploy the stack to. */
-  // env: { account: '123456789012', region: 'us-east-1' },
+const database = new UnoDatabaseStack(app, "unoDatabaseStack", {
+    stackName: "UnoDatabaseStack"
+})
 
-  /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
+const lambdas = new UnoLambdaStack(app, "UnoLambdaStack", {
+    stackName: "UnoLamdbaStack"
 });
+
+const api = new UnoApiStack(app, "UnoApiStack", 
+    {
+        getPokemonLambda: lambdas.getPokemonLambda,
+        postPokemonLambda: lambdas.postPokemonLambda,
+        getOnePokemonLambda: lambdas.getOnePokemonLamdba,
+        updatePokemonLambda: lambdas.updatePokemonLamdba,
+        deletePokemonLambda: lambdas.deletePokemonLamdba
+    }, {
+        registerLambda: auth.registerLambda,
+        loginLambda: auth.loginLambda,
+        userPool: auth.userPool
+    }, {
+    stackName: "UnoApiStack"
+});
+

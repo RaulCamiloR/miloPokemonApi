@@ -67,3 +67,6 @@ https://us-east-1_gjiUMW4Is.auth.us-east-1.amazoncognito.com/oauth2/token
 cdk deploy --all --outputs-file outputs.json
 
 npx tsc    para typescript
+
+# para confirmar usuarios
+aws cognito-idp admin-set-user-password --user-pool-id us-east-1_Ta30Xj2lT --username a4489428-60b1-7046-51e6-9df2af1004e3 --password "Milo2025!" --permanent
